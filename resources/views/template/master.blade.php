@@ -28,9 +28,45 @@
             border: 1px solid #ddd;
             z-index: 999;
             margin-top: 38px; /* Adjust as needed */
+            max-height: 300px; /* Adjust as needed */
+            overflow-y: auto;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        .product-result {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        .product-result img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    
+        .product-result h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 400;
+            color: #333;
+        }
+    
+        .product-result:hover {
+            background-color: #f7f7f7;
+        }
+    
+        .no-results {   
+            padding: 10px;
+            text-align: center;
+            color: #777;
         }
     </style>
-    
     
 </head>
 <body>
@@ -46,14 +82,11 @@
                             </form>
                             <div id="searchResults"></div> <!-- Search results will be displayed here -->
                         </div>
-                        
-
                         <div class="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
                             <div class="site-logo">
                                 <a href="{{ route('home') }}" class="js-logo-clone">Balige</a>
                             </div>
                         </div>
-
                         <div class="col-6 col-md-4 order-3 order-md-3 text-right">
                             <div class="site-top-icons">
                                 <ul>
@@ -84,11 +117,10 @@
                                         </ul>
                                     </li>
                                     @endguest
-                                    
                                     <li>
                                         <a href="{{ route('cart.index') }}" class="site-cart">
                                             <span class="icon icon-shopping_cart"></span>
-                                            {{-- <span class="count">{{ $filteredCarts->count() }}</span> --}}
+                                            <span class="count">{{ $cartItemCount }}</span> <!-- Display total items -->
                                         </a>
                                     </li>
                                     <li class="d-inline-block d-md-none ml-md-0">
@@ -96,6 +128,7 @@
                                     </li>
                                 </ul>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -186,48 +219,72 @@
     <script src="{{ asset('assets/js/main.js') }}"></script>
     
     <script>
-        function deleteItem(cartId) {
-    if (confirm('Apakah anda yakin ingin menghapus?')) {
-        // Membuat permintaan POST menggunakan JavaScript
-        fetch("{{ route('cart.remove', ':cartId') }}".replace(':cartId', cartId), {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                _method: 'DELETE'
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                // Jika penghapusan berhasil, Anda dapat melakukan sesuatu seperti memperbarui tampilan
-                location.reload();
-            } else {
-                alert('Terjadi kesalahan saat menghapus item.');
-            }
-        })
-        .catch(error => {
-            alert('Terjadi kesalahan saat menghapus item.');
-            console.error(error);
-        });
-    }
-}
-
         $(document).ready(function() {
             $('#searchInput').on('keyup', function() {
                 var query = $(this).val();
-                $.ajax({
-                    url: "{{ route('search') }}",
-                    type: "GET",
-                    data: {'query': query},
-                    success: function(data) {
-                        $('#searchResults').html(data);
+                if (query === '') {
+                    $('#searchResults').empty();
+                } else {
+                    $.ajax({
+                        url: "{{ route('search') }}",
+                        type: "GET",
+                        data: {'query': query},
+                        success: function(data) {
+                            $('#searchResults').html(data);
+                        }
+                    });
+                }
+            });
+    
+            $('#searchInput').on('keypress', function(e) {
+                if (e.which === 13) { // 13 is the Enter key
+                    e.preventDefault(); // Prevent the default form submit action
+                    var query = $(this).val();
+                    if (query !== '') {
+                        window.location.href = '{{ route("search.results") }}?query=' + query;
                     }
-                });
+                }
+            });
+    
+            // Add click event listener for search results
+            $(document).on('click', '.product-result', function() {
+                var query = $(this).data('query');
+                if (query !== '') {
+                    window.location.href = '{{ route("search.results") }}?query=' + query;
+                }
             });
         });
+
+
+        function deleteItem(cartId) {
+        if (confirm('Apakah anda yakin ingin menghapus?')) {
+            // Membuat permintaan POST menggunakan JavaScript
+            fetch("{{ route('cart.remove', ':cartId') }}".replace(':cartId', cartId), {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    _method: 'DELETE'
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Jika penghapusan berhasil, Anda dapat melakukan sesuatu seperti memperbarui tampilan
+                    location.reload();
+                } else {
+                    alert('Terjadi kesalahan saat menghapus item.');
+                }
+            })
+            .catch(error => {
+                alert('Terjadi kesalahan saat menghapus item.');
+                console.error(error);
+            });
+        }
+    }
     </script>
-    
+        
+        
 </body>
 </html>

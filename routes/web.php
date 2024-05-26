@@ -74,9 +74,8 @@ Route::get('thankyou', function () {
 // Route::get('/produk', [\App\Http\Controllers\ShowController::class,'index']);
 
 Route::get('/', [ShowController::class, 'index'])->name('home');
-//live search home
-// routes/web.php
 Route::get('/search', [ShowController::class, 'liveSearch'])->name('search');
+Route::get('/search-results', [ShowController::class, 'searchResults'])->name('search.results');
 
 
 Route::get('rumah',[SesiController::class,'index']);

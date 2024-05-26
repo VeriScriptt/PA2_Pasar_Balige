@@ -89,23 +89,35 @@ class ShowController extends Controller
     public function liveSearch(Request $request)
     {
         $query = $request->input('query');
-        if($query){
+        if ($query) {
             $products = Produk::where('nama_produk', 'like', "%$query%")->get();
         } else {
             $products = [];
         }
-
+    
         $output = '';
         if ($products->count() > 0) {
             foreach ($products as $product) {
-                $output .= '<div class="product">' . $product->nama_produk . '</div>';
+                $output .= '<div class="product-result" data-query="' . $product->nama_produk . '">';
+                $output .= '<h3>' . $product->nama_produk . '</h3>';
+                // $output .= '<img src="' . asset('images/produk/' . $product->gambar_produk) . '" alt="' . $product->nama_produk . '">';
+                $output .= '</div>';
             }
         } else {
             $output = '<div class="no-results">No results found.</div>';
         }
-
+    
         return response()->json($output);
     }
+    
+    
+    public function searchResults(Request $request)
+{
+    $query = $request->input('query');
+    $products = Produk::where('nama_produk', 'like', "%$query%")->get();
+
+    return view('search_results', compact('products', 'query'));
+}
     
 
     

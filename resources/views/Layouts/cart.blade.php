@@ -73,7 +73,7 @@
           <div class="col-md-6">
             <div class="row mb-5">
               <div class="col-md-6">
-                <a href="{{ route('shop') }}" class="btn btn-outline-primary btn-sm btn-block">Continue Shopping</a>
+                <a href="{{ route('home') }}" class="btn btn-outline-primary btn-sm btn-block">Continue Shopping</a>
               </div>
             </div>
           </div>
@@ -103,9 +103,9 @@
                 </div>
 
                 <div class="row">
-                  {{-- <div class="col-md-12">
-                    <button class="btn btn-primary btn-lg py-3 btn-block" onclick="window.location='{{ route('checkout') }}'">Checkout</button>
-                  </div> --}}
+                  <div class="col-md-12">
+                    <button class="btn btn-primary btn-lg py-3 btn-block" onclick="window.location='{{ route('doku') }}'">Checkout</button>
+                  </div>
                 </div>
               </div>
             </div>
